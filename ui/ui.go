@@ -52,11 +52,15 @@ func RequestExecutor() {
 			continue
 		}
 		if strings.HasPrefix(sqlCommand, "SELECT ") {
-			values, err := database.ExecuteQuery(sqlCommand)
+			values, columns, err := database.ExecuteQuery(sqlCommand)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			} else {
+				for _, column := range columns {
+					fmt.Print(column.Name + " ")
+				}
+				fmt.Println()
 				for _, value := range values {
 					fmt.Println(value)
 				}

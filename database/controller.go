@@ -49,21 +49,21 @@ func ConnectDatabase() bool {
 	}
 }
 
-func ExecuteQuery(query string) ([]any, error) {
+func ExecuteQuery(query string) ([]any, []pgconn.FieldDescription, error) {
 	rows, err := databaseConnection.Query(context.Background(), query)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer rows.Close()
 	var values []any
 	for rows.Next() {
 		vals, err := rows.Values()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		values = append(values, vals)
 	}
-	return values, nil
+	return values, rows.FieldDescriptions(), nil
 }
 
 func Execute(query string) (pgconn.CommandTag, error) {
