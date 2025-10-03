@@ -45,19 +45,19 @@ func ConnectDatabase() bool {
 	}
 }
 
-func ExecuteQuery(query string) ([][]any, []string, error) {
+func ExecuteQuery(query string) ([][]string, []string, error) {
 	rows, err := databaseConnection.Query(query)
 	if err != nil {
 		return nil, nil, err
 	}
 	defer rows.Close()
-	var values [][]any
+	var values [][]string
 	columns, err := rows.Columns()
 	if err != nil {
 		fmt.Println(err)
 	}
 	for rows.Next() {
-		valuesRow := make([]any, len(columns))
+		valuesRow := make([]string, len(columns))
 		valuesRowAddreses := make([]any, len(columns))
 		for i := range len(valuesRow) {
 			valuesRowAddreses[i] = &valuesRow[i]

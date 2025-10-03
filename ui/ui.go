@@ -57,13 +57,7 @@ func RequestExecutor() {
 				fmt.Println(err)
 				continue
 			} else {
-				for _, column := range columns {
-					fmt.Print(column + " ")
-				}
-				fmt.Println()
-				for _, value := range values {
-					fmt.Println(value)
-				}
+				fmt.Println(TableBuilder(columns, values))
 			}
 		} else {
 			result, err := database.Execute(sqlCommand)
