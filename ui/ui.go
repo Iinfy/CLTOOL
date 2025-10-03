@@ -72,7 +72,7 @@ func RequestExecutor() {
 				continue
 			}
 			rowsAffected, _ := result.RowsAffected()
-			fmt.Println("Rows affected: %v", rowsAffected)
+			fmt.Println("Rows affected: ", rowsAffected)
 		}
 
 	}
