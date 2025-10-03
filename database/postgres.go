@@ -1,19 +1,18 @@
 package database
 
 import (
-	"context"
+	"database/sql"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
+	_ "github.com/lib/pq"
 )
 
-func ConnectPostgres(databaseType string, databaseLogin string, databasePassword string,
-	databaseHost string, databasePort string, databaseName string) (*pgx.Conn, error) {
-	connstr := fmt.Sprintf("%v://%v:%v@%v:%v/%v", databaseType, databaseLogin, databasePassword, databaseHost, databasePort, databaseName)
-	connection, err := pgx.Connect(context.Background(), connstr)
+func ConnectPostgres(databaseLogin string, databasePassword string,
+	databaseHost string, databasePort string, databaseName string) (*sql.DB, error) {
+	connstr := fmt.Sprintf("user=%v password=%v dbname=%v host=%v port=%v sslmode=disable", databaseLogin, databasePassword, databaseName, databaseHost, databasePort)
+	connection, err := sql.Open("postgres", connstr)
 	if err != nil {
 		return nil, err
 	}
 	return connection, nil
-
 }

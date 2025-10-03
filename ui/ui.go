@@ -58,7 +58,7 @@ func RequestExecutor() {
 				continue
 			} else {
 				for _, column := range columns {
-					fmt.Print(column.Name + " ")
+					fmt.Print(column + " ")
 				}
 				fmt.Println()
 				for _, value := range values {
@@ -66,12 +66,13 @@ func RequestExecutor() {
 				}
 			}
 		} else {
-			tag, err := database.Execute(sqlCommand)
+			result, err := database.Execute(sqlCommand)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			fmt.Println("Rows affected: ", tag.RowsAffected())
+			rowsAffected, _ := result.RowsAffected()
+			fmt.Println("Rows affected: %v", rowsAffected)
 		}
 
 	}

@@ -1,16 +1,13 @@
 package database
 
 import (
-	"context"
+	"database/sql"
 	"fmt"
 	"strings"
-
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var databaseType, databaseLogin, databasePassword, databaseHost, databasePort, databaseName string
-var databaseConnection *pgx.Conn
+var databaseConnection *sql.DB
 
 func SaveDatabaseCredentials(credentials string, dbType string) error {
 	splitedCredentials := strings.Split(credentials, "/")
@@ -30,8 +27,7 @@ func SaveDatabaseCredentials(credentials string, dbType string) error {
 func ConnectDatabase() bool {
 	switch databaseType {
 	case "postgres":
-		dconn, err := ConnectPostgres(
-			databaseType,
+		dbconn, err := ConnectPostgres(
 			databaseLogin,
 			databasePassword,
 			databaseHost,
@@ -42,34 +38,43 @@ func ConnectDatabase() bool {
 			fmt.Printf("Error during connection to database : %v\n", err)
 			return false
 		}
-		databaseConnection = dconn
+		databaseConnection = dbconn
 		return true
 	default:
 		return false
 	}
 }
 
-func ExecuteQuery(query string) ([]any, []pgconn.FieldDescription, error) {
-	rows, err := databaseConnection.Query(context.Background(), query)
+func ExecuteQuery(query string) ([][]any, []string, error) {
+	rows, err := databaseConnection.Query(query)
 	if err != nil {
 		return nil, nil, err
 	}
 	defer rows.Close()
-	var values []any
-	for rows.Next() {
-		vals, err := rows.Values()
-		if err != nil {
-			return nil, nil, err
-		}
-		values = append(values, vals)
+	var values [][]any
+	columns, err := rows.Columns()
+	if err != nil {
+		fmt.Println(err)
 	}
-	return values, rows.FieldDescriptions(), nil
+	for rows.Next() {
+		valuesRow := make([]any, len(columns))
+		valuesRowAddreses := make([]any, len(columns))
+		for i := range len(valuesRow) {
+			valuesRowAddreses[i] = &valuesRow[i]
+		}
+		err := rows.Scan(valuesRowAddreses...)
+		if err != nil {
+			fmt.Println(err)
+		}
+		values = append(values, valuesRow)
+	}
+	return values, columns, nil
 }
 
-func Execute(query string) (pgconn.CommandTag, error) {
-	tag, err := databaseConnection.Exec(context.Background(), query)
+func Execute(query string) (sql.Result, error) {
+	result, err := databaseConnection.Exec(query)
 	if err != nil {
-		return tag, err
+		return result, err
 	}
-	return tag, nil
+	return result, nil
 }
