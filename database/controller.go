@@ -40,6 +40,20 @@ func ConnectDatabase() bool {
 		}
 		databaseConnection = dbconn
 		return true
+	case "mysql":
+		dbconn, err := ConnectMySql(
+			databaseLogin,
+			databasePassword,
+			databaseHost,
+			databasePort,
+			databaseName,
+		)
+		if err != nil {
+			fmt.Printf("Error during connection to database : %v\n", err)
+			return false
+		}
+		databaseConnection = dbconn
+		return true
 	default:
 		return false
 	}
