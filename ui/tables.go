@@ -21,9 +21,9 @@ func TableBuilder(columns []string, data [][]string) string {
 	table += rowString
 	table += splitterLine
 	table += "\n"
-	for i := 0; i < lengthCells; i++ {
+	for i := range lengthCells {
 		rowString = "|"
-		for j := 0; j < widthCells; j++ {
+		for j := range widthCells {
 			rowString += data[i][j]
 			rowString += strings.Repeat(" ", columnWidths[j]-len(data[i][j]))
 			rowString += "|"
