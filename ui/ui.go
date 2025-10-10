@@ -21,36 +21,41 @@ func StartUI() {
 	var databaseCredentials string
 	var databaseType string
 	fmt.Println(CLTOOL_LOGO)
-	fmt.Println("\n\nSelect Database(Enter number):\n1.Postgres\n2.MySQL\n\n0.Exit")
-	fmt.Scan(&action)
-	switch action {
-	case "1":
-		databaseType = "postgres"
-	case "2":
-		databaseType = "mysql"
-	case "3":
-		databaseType = "sqlite"
-	default:
-		fmt.Println("Incorrect database type")
-	}
-	if databaseType != "sqlite" {
-		fmt.Println("PLEASE DONT USE SPACES!!!")
-		fmt.Println("Enter database credentials(databaseLogin/databasePassword/databaseHost/databasePort/databaseName):")
-		fmt.Scan(&databaseCredentials)
-		err := database.SaveDatabaseCredentials(databaseCredentials, databaseType)
-		if err != nil {
-			fmt.Println(err)
+	for {
+		fmt.Println("\n\nSelect Database(Enter number):\n1.Postgres\n2.MySQL\n3.SQLite\n\n0.Exit")
+		fmt.Scan(&action)
+		switch action {
+		case "1":
+			databaseType = "postgres"
+		case "2":
+			databaseType = "mysql"
+		case "3":
+			databaseType = "sqlite"
+		case "0":
 			return
+		default:
+			fmt.Println("Incorrect database type")
+			continue
 		}
-		connectionStatus := database.ConnectDatabase()
-		if connectionStatus {
-			fmt.Println("Succesfully connected to %s", databaseType)
-			RequestExecutor()
+		if databaseType != "sqlite" {
+			fmt.Println("PLEASE DONT USE SPACES!!!")
+			fmt.Println("Enter database credentials(databaseLogin/databasePassword/databaseHost/databasePort/databaseName):")
+			fmt.Scan(&databaseCredentials)
+			err := database.SaveDatabaseCredentials(databaseCredentials, databaseType)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			connectionStatus := database.ConnectDatabase()
+			if connectionStatus {
+				fmt.Println("Succesfully connected to ", databaseType)
+				RequestExecutor()
+			} else {
+				fmt.Println("An error occured while connecting to database")
+			}
 		} else {
-			fmt.Println("An error occured while connecting to database")
+			fmt.Println("Coming soon")
 		}
-	} else {
-		fmt.Println("Coming soon")
 	}
 
 }
@@ -70,7 +75,7 @@ func RequestExecutor() {
 		if sqlCommand == "exit" {
 			break
 		}
-		if strings.HasPrefix(sqlCommand, "SELECT ") {
+		if strings.HasPrefix(sqlCommand, "SELECT ") || strings.HasPrefix(sqlCommand, "SHOW ") {
 			values, columns, err := database.ExecuteQuery(sqlCommand)
 			if err != nil {
 				fmt.Println(err)
