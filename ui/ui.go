@@ -22,15 +22,13 @@ func StartUI() {
 	var databaseType string
 	fmt.Println(CLTOOL_LOGO)
 	for {
-		fmt.Println("\n\nSelect Database(Enter number):\n1.Postgres\n2.MySQL\n3.SQLite\n\n0.Exit")
+		fmt.Println("\n\nSelect Database(Enter number):\n1.Postgres\n2.MySQL\n\n0.Exit")
 		fmt.Scan(&action)
 		switch action {
 		case "1":
 			databaseType = "postgres"
 		case "2":
 			databaseType = "mysql"
-		case "3":
-			databaseType = "sqlite"
 		case "0":
 			return
 		default:
@@ -53,9 +51,8 @@ func StartUI() {
 			} else {
 				fmt.Println("An error occured while connecting to database")
 			}
-		} else {
-			fmt.Println("Coming soon")
 		}
+
 	}
 
 }

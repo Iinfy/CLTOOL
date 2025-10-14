@@ -35,7 +35,7 @@ func ConnectDatabase() bool {
 			databaseName,
 		)
 		if err != nil {
-			fmt.Printf("Error during connection to database : %v\n", err)
+			fmt.Println(err)
 			return false
 		}
 		databaseConnection = dbconn
@@ -49,7 +49,7 @@ func ConnectDatabase() bool {
 			databaseName,
 		)
 		if err != nil {
-			fmt.Printf("Error during connection to database : %v\n", err)
+			fmt.Println(err)
 			return false
 		}
 		databaseConnection = dbconn

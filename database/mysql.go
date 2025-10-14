@@ -14,5 +14,9 @@ func ConnectMySql(databaseLogin string, databasePassword string,
 	if err != nil {
 		return nil, err
 	}
-	return connection, nil
+	if connection.Ping() == nil {
+		return connection, nil
+	} else {
+		return nil, fmt.Errorf("error during database connection")
+	}
 }
