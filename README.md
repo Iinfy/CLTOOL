@@ -30,6 +30,12 @@
    go run CLTOOL
    ```
 
+### Usage
+1. Select database type
+   * Postgres
+   * MySQL
+2. Enter database credentials
+3. Execute SQL commands
 
 
 
