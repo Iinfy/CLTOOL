@@ -6,7 +6,14 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/fatih/color"
 )
+
+var redColor = color.New(color.FgRed)
+var greenColor = color.New(color.FgGreen)
+var cyanColor = color.New(color.FgCyan)
+var sprintGreenColor = color.New(color.FgGreen).SprintFunc()
 
 const CLTOOL_LOGO string = `
 ░█████╗░██╗░░░░░████████╗░█████╗░░█████╗░██╗░░░░░
@@ -17,6 +24,7 @@ const CLTOOL_LOGO string = `
 ░╚════╝░╚══════╝░░░╚═╝░░░░╚════╝░░╚════╝░╚══════╝`
 
 func StartUI() {
+
 	var action string
 	var databaseCredentials string
 	var databaseType string
@@ -31,25 +39,29 @@ func StartUI() {
 			databaseType = "mysql"
 		case "0":
 			return
+		case "exit":
+			return
 		default:
-			fmt.Println("Incorrect database type")
+			redColor.Println("Incorrect database type")
 			continue
 		}
 		if databaseType != "sqlite" {
-			fmt.Println("PLEASE DONT USE SPACES!!!")
-			fmt.Println("Enter database credentials(databaseLogin/databasePassword/databaseHost/databasePort/databaseName):")
+			redColor.Println("PLEASE DONT USE SPACES")
+			greenSlash := sprintGreenColor("/")
+			fmt.Printf("%sdatabaseLogin%sdatabasePassword%sdatabaseHost%sdatabasePort%sdatabaseName%s:\n",
+				sprintGreenColor("Enter database credentials("), greenSlash, greenSlash, greenSlash, greenSlash, sprintGreenColor(")"))
 			fmt.Scan(&databaseCredentials)
 			err := database.SaveDatabaseCredentials(databaseCredentials, databaseType)
 			if err != nil {
-				fmt.Println(err)
-				return
+				redColor.Println(err)
+				continue
 			}
 			connectionStatus := database.ConnectDatabase()
 			if connectionStatus {
-				fmt.Println("Succesfully connected to ", databaseType)
+				greenColor.Println("Succesfully connected to ", databaseType)
 				RequestExecutor()
 			} else {
-				fmt.Println("An error occured while connecting to database")
+				redColor.Println("An error occured while connecting to database")
 			}
 		}
 
@@ -61,7 +73,7 @@ func RequestExecutor() {
 	scanner := bufio.NewScanner(os.Stdin)
 	var sqlCommand string
 	for {
-		fmt.Print("Enter command> ")
+		cyanColor.Print("\rEnter command> ")
 		if !scanner.Scan() {
 			break
 		}
@@ -75,7 +87,7 @@ func RequestExecutor() {
 		if strings.HasPrefix(sqlCommand, "SELECT ") || strings.HasPrefix(sqlCommand, "SHOW ") {
 			values, columns, err := database.ExecuteQuery(sqlCommand)
 			if err != nil {
-				fmt.Println(err)
+				redColor.Println(err)
 				continue
 			} else {
 				fmt.Println(TableBuilder(columns, values))
@@ -83,11 +95,11 @@ func RequestExecutor() {
 		} else {
 			result, err := database.Execute(sqlCommand)
 			if err != nil {
-				fmt.Println(err)
+				redColor.Println(err)
 				continue
 			}
 			rowsAffected, _ := result.RowsAffected()
-			fmt.Println("Rows affected: ", rowsAffected)
+			greenColor.Println("Rows affected: ", rowsAffected)
 		}
 
 	}

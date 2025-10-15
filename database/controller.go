@@ -35,7 +35,6 @@ func ConnectDatabase() bool {
 			databaseName,
 		)
 		if err != nil {
-			fmt.Println(err)
 			return false
 		}
 		databaseConnection = dbconn
@@ -49,7 +48,6 @@ func ConnectDatabase() bool {
 			databaseName,
 		)
 		if err != nil {
-			fmt.Println(err)
 			return false
 		}
 		databaseConnection = dbconn
@@ -78,7 +76,7 @@ func ExecuteQuery(query string) ([][]string, []string, error) {
 		}
 		err := rows.Scan(valuesRowAddreses...)
 		if err != nil {
-			fmt.Println(err)
+			return nil, nil, err
 		}
 		values = append(values, valuesRow)
 	}
